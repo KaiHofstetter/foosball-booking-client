@@ -10,8 +10,9 @@ public class AccessTokenResponse {
   private String tokenType;
   @JsonProperty(value = "expires_in")
   private long expiresIn;
-  @JsonProperty(value = "scope")
   private String scope;
+  @JsonProperty(value = "refresh_token")
+  private String refreshToken;
 
   public AccessTokenResponse() {
   }
@@ -53,5 +54,13 @@ public class AccessTokenResponse {
 
   public void setScope(String scope) {
     this.scope = scope;
+  }
+
+  public String getRefreshToken() {
+    return refreshToken;
+  }
+
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
   }
 }

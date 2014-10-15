@@ -14,7 +14,7 @@ public class AuthorizationServerClient {
   private static final String CLIENT_ID = "testClient";
   private static final String CLIENT_SECRET = "secret";
 
-  private final Client client;
+  private Client client;
 
   public AuthorizationServerClient() {
     client = ClientBuilder.newClient();
@@ -26,6 +26,20 @@ public class AuthorizationServerClient {
 
     return client.target(URL_AUTHORIZATION_SERVICE)
                  .register(HttpAuthenticationFeature.basic(CLIENT_ID, CLIENT_SECRET))
+                 .request(MediaType.APPLICATION_JSON)
+                 .post(Entity.entity(postContent, MediaType.APPLICATION_FORM_URLENCODED_TYPE), AccessTokenResponse.class);
+  }
+
+  public AccessTokenResponse getAccessToken(String code) {
+    client = ClientBuilder.newClient();
+
+    Form postContent = new Form();
+    postContent.param("grant_type", "authorization_code");
+    postContent.param("code", code);
+    postContent.param("redirect_uri", "http://localhost:8090/foosball-booking-client/authorizationcallback");
+
+    return client.target(URL_AUTHORIZATION_SERVICE)
+                 .register(HttpAuthenticationFeature.basic("testClient2", "secret"))
                  .request(MediaType.APPLICATION_JSON)
                  .post(Entity.entity(postContent, MediaType.APPLICATION_FORM_URLENCODED_TYPE), AccessTokenResponse.class);
   }
