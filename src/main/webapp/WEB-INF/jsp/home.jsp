@@ -20,8 +20,8 @@
     <table class="table table-striped" width="800">
         <thead>
         <tr>
-            <th width="20%">Begin</th>
-            <th width="20%">End</th>
+            <th width="18%">Begin</th>
+            <th width="18%">End</th>
             <th>Name</th>
             <th>Comment</th>
         </tr>
