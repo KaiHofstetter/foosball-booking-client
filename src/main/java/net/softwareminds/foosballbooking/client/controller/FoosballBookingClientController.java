@@ -5,14 +5,21 @@ import net.softwareminds.foosballbooking.client.oauth2.AccessTokenResponse;
 import net.softwareminds.foosballbooking.client.oauth2.AuthorizationServerClient;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 
 @Controller
@@ -21,6 +28,9 @@ public class FoosballBookingClientController {
   private AuthorizationServerClient authorizationServerClient;
   private FoosballBookingClient foosballBookingClient;
 
+  private String clientCredentialAccessToken;
+  private String authorizationCodeAccessToken;
+
   public FoosballBookingClientController() {
     authorizationServerClient = new AuthorizationServerClient();
     foosballBookingClient = new FoosballBookingClient();
@@ -28,9 +38,9 @@ public class FoosballBookingClientController {
 
   @RequestMapping(value = "/")
   public ModelAndView allBookings(Map<String, Object> model) throws IOException {
-    AccessTokenResponse accessTokenResponse = authorizationServerClient.getAccessToken();
+    clientCredentialAccessToken = authorizationServerClient.getAccessToken().getAccessToken();
 
-    List<Booking> bookings = foosballBookingClient.getAllBookings(accessTokenResponse.getAccessToken());
+    List<Booking> bookings = foosballBookingClient.getAllBookings(clientCredentialAccessToken);
 
     model.put("bookings", bookings);
 
@@ -44,11 +54,29 @@ public class FoosballBookingClientController {
   }
 
 
+  @RequestMapping(value = "/book")
+  public String getBookPage() throws IOException {
+    return "book";
+  }
+
+
+  @RequestMapping(value = "/booking", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED)
+  public String formBookingPost(@RequestParam String beginDateTime, @RequestParam String endDateTime, @RequestParam String Name, @RequestParam String Comment ) throws IOException {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd.MMMM yyyy");
+    LocalDateTime begin = LocalDateTime.parse(beginDateTime, formatter);
+    LocalDateTime end = LocalDateTime.parse(beginDateTime, formatter);
+    foosballBookingClient.addBooking(new Booking(begin, end, Name, Comment), authorizationCodeAccessToken);
+
+    String redirectUrl = "http://localhost:8090/foosball-booking-client";
+    return "redirect:" + redirectUrl;
+  }
+
   @RequestMapping(value = "/authorizationcallback")
   public String callback(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state){
     AccessTokenResponse accessTokenResponse = authorizationServerClient.getAccessToken(code);
-    foosballBookingClient.addBooking(accessTokenResponse.getAccessToken());
-    String redirectUrl = "http://localhost:8090/foosball-booking-client";
+    authorizationCodeAccessToken = accessTokenResponse.getAccessToken();
+
+    String redirectUrl = "http://localhost:8090/foosball-booking-client/book";
     return "redirect:" + redirectUrl;
   }
 }

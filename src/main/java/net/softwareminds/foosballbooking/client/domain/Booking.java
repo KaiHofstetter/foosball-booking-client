@@ -1,6 +1,8 @@
 package net.softwareminds.foosballbooking.client.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -13,10 +15,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Booking {
-
-  private UUID id = UUID.randomUUID();
-
   private LocalDateTime begin = null;
   private LocalDateTime end = null;
 
@@ -31,10 +31,6 @@ public class Booking {
     this.end = end;
     this.user = user;
     this.comment = comment;
-  }
-
-  public UUID getId() {
-    return id;
   }
 
   @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
@@ -84,8 +80,7 @@ public class Booking {
 
     final Booking booking = (Booking) o;
 
-    return new EqualsBuilder().append(this.id, booking.id)
-                              .append(this.begin, booking.begin)
+    return new EqualsBuilder().append(this.begin, booking.begin)
                               .append(this.end, booking.end)
                               .append(this.comment, booking.comment)
                               .append(this.user, booking.user)
@@ -94,6 +89,6 @@ public class Booking {
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(id).append(begin).append(end).append(user).append(comment).hashCode();
+    return new HashCodeBuilder().append(begin).append(end).append(user).append(comment).hashCode();
   }
 }

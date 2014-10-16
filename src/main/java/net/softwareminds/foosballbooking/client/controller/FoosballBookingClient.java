@@ -29,12 +29,10 @@ public class FoosballBookingClient {
                  .get(new GenericType<List<Booking>>(){});
   }
 
-  public void addBooking(String accessToken) {
-    Booking newBooking = new Booking(LocalDateTime.of(2014, 10, 8, 15, 15), LocalDateTime.of(2014, 10, 8, 15, 45), "Michael", "Here we go aggain!");
-
+  public void addBooking(Booking booking, String accessToken) {
     client.target(URL_FOOSBALL_BOOKING_SERVICE)
                  .request(MediaType.APPLICATION_JSON)
                  .header("Authorization", "Bearer " + accessToken)
-                 .post(Entity.entity(newBooking, MediaType.APPLICATION_JSON), AccessTokenResponse.class);
+                 .post(Entity.entity(booking, MediaType.APPLICATION_JSON), AccessTokenResponse.class);
   }
 }
