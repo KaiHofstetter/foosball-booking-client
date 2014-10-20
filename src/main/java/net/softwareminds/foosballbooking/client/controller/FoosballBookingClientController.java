@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -59,20 +61,23 @@ public class FoosballBookingClientController {
     return "book";
   }
 
-
   @RequestMapping(value = "/booking", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED)
-  public String formBookingPost(@RequestParam String beginDateTime, @RequestParam String endDateTime, @RequestParam String Name, @RequestParam String Comment ) throws IOException {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd.MMMM yyyy");
-    LocalDateTime begin = LocalDateTime.parse(beginDateTime, formatter);
-    LocalDateTime end = LocalDateTime.parse(beginDateTime, formatter);
-    foosballBookingClient.addBooking(new Booking(begin, end, Name, Comment), authorizationCodeAccessToken);
+  public String formBookingPost(@RequestParam String beginTime, @RequestParam String beginDate, @RequestParam String endTime, @RequestParam String endDate,
+                                @RequestParam String comment) throws IOException {
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+    LocalDateTime begin = LocalTime.parse(beginTime, timeFormatter).atDate(LocalDate.parse(beginDate, dateFormatter));
+    LocalDateTime end = LocalTime.parse(endTime, timeFormatter).atDate(LocalDate.parse(endDate, dateFormatter));
+
+    foosballBookingClient.addBooking(new Booking(begin, end, "Hans", comment), authorizationCodeAccessToken);
 
     String redirectUrl = "http://localhost:8090/foosball-booking-client";
     return "redirect:" + redirectUrl;
   }
 
   @RequestMapping(value = "/authorizationcallback")
-  public String callback(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state){
+  public String callback(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state) {
     AccessTokenResponse accessTokenResponse = authorizationServerClient.getAccessToken(code);
     authorizationCodeAccessToken = accessTokenResponse.getAccessToken();
 

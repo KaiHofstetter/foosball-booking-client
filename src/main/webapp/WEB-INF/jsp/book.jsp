@@ -20,34 +20,68 @@
 <div class="jumbotron">
     <h1>Foosball Booking Sample Client</h1>
 
-    <form role="form" method="post" action="/foosball-booking-client/booking">
+    <h2>Booking</h2>
+    <form class="form-horizontal" role="form" method="post" action="/foosball-booking-client/booking">
         <div class="form-group">
-            <label for="beginDateTime">Begin</label>
-            <div class="input-group date" id="datetimepicker1">
-                <input name="beginDateTime" type='text' class="form-control" placeholder="Begin date and time" data-date-format="hh:mm DD.MMMM YYYY"/>
+            <label class="col-sm-1 control-label" for="begin">Begin</label>
+
+            <div class="col-sm-2">
+                <div class="input-group time" id="timepicker1">
+                    <input name="beginTime" type='text' class="form-control" placeholder="Time" data-date-format="HH:mm"/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group date" id="datepicker1">
+                    <input name="beginDate" type='text' class="form-control" placeholder="Date" data-date-format="DD.MM.YYYY"/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                     </span>
+                </div>
             </div>
             <script type="text/javascript">
                 $(function () {
-                    $('#datetimepicker1').datetimepicker();
+                    $('#timepicker1').datetimepicker({ pickDate: false});
+                });
+                $(function () {
+                    $('#datepicker1').datetimepicker({ pickTime: false});
                 });
             </script>
-            <label for="endDateTime">End</label>
-            <div class="input-group date" id="datetimepicker2">
-                <input name="endDateTime" type='text' class="form-control" placeholder="End date and time" data-date-format="hh:mm DD.MMMM YYYY"/>
+        </div>
+
+
+        <div class="form-group">
+            <label class="col-sm-1 control-label" for="end">End</label>
+
+            <div class="col-sm-2">
+                <div class="input-group time" id="timepicker2">
+                    <input name="endTime" type='text' class="form-control" placeholder="Time" data-date-format="HH:mm"/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group date" id="datepicker2">
+                    <input name="endDate" type='text' class="form-control" placeholder="Date" data-date-format="DD.MM.YYYY"/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                     </span>
+                </div>
             </div>
             <script type="text/javascript">
                 $(function () {
-                    $('#datetimepicker2').datetimepicker();
+                    $('#timepicker2').datetimepicker({ pickDate: false});
+                });
+                $(function () {
+                    $('#datepicker2').datetimepicker({ pickTime: false});
                 });
             </script>
-            <label for="Name">Name</label>
-            <input name="Name" type='text' class="form-control" placeholder="Name"/>
-            <label for="Comment">Comment</label>
-            <input name="Comment" type='text' class="form-control" placeholder="Comment"/>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-1" for="Comment">Comment</label>
+
+            <div class="col-sm-3">
+                <input id="Comment" name="comment" type='text' class="form-control" placeholder="Comment"/>
+            </div>
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
     </form>

@@ -17,6 +17,7 @@
 
 <div class="jumbotron">
     <h1>Foosball Booking Sample Client</h1>
+    <h2>Overview</h2>
     <table class="table table-striped" width="800">
         <thead>
         <tr>
