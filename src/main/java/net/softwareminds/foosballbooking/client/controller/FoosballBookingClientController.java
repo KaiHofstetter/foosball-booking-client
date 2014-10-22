@@ -1,15 +1,14 @@
 package net.softwareminds.foosballbooking.client.controller;
 
 import net.softwareminds.foosballbooking.client.domain.Booking;
+import net.softwareminds.foosballbooking.client.oauth2.OAuthAuthorizationCodeClient;
 import net.softwareminds.foosballbooking.client.oauth2.AccessTokenResponse;
-import net.softwareminds.foosballbooking.client.oauth2.AuthorizationServerClient;
+import net.softwareminds.foosballbooking.client.oauth2.OAuthClientCredentialClient;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -27,20 +26,21 @@ import javax.ws.rs.core.MediaType;
 @Controller
 public class FoosballBookingClientController {
 
-  private AuthorizationServerClient authorizationServerClient;
-  private FoosballBookingClient foosballBookingClient;
+  private OAuthClientCredentialClient oauthClientCredentialClient;
+  private OAuthAuthorizationCodeClient oauthAuthorizationCodeClient;
 
-  private String clientCredentialAccessToken;
+  private FoosballBookingClient foosballBookingClient;
   private String authorizationCodeAccessToken;
 
   public FoosballBookingClientController() {
-    authorizationServerClient = new AuthorizationServerClient();
+    oauthClientCredentialClient = new OAuthClientCredentialClient();
+    oauthAuthorizationCodeClient = new OAuthAuthorizationCodeClient();
     foosballBookingClient = new FoosballBookingClient();
   }
 
   @RequestMapping(value = "/")
   public ModelAndView allBookings(Map<String, Object> model) throws IOException {
-    clientCredentialAccessToken = authorizationServerClient.getAccessToken().getAccessToken();
+    String clientCredentialAccessToken = oauthClientCredentialClient.getAccessTokenResponse().getAccessToken();
 
     List<Booking> bookings = foosballBookingClient.getAllBookings(clientCredentialAccessToken);
 
@@ -51,10 +51,8 @@ public class FoosballBookingClientController {
 
   @RequestMapping(value = "/bookings")
   public String postBooking(Map<String, Object> model) throws IOException {
-    String redirectUrl = "http://localhost:8080/foosball-booking-service/oauth/authorize?response_type=code&client_id=testClient2&state=xyz&redirect_uri=http%3A%2F%2Flocalhost%3A8090%2Ffoosball-booking-client%2Fauthorizationcallback";
-    return "redirect:" + redirectUrl;
+    return "redirect:" + oauthAuthorizationCodeClient.redirectUriToAuthorizationServer();
   }
-
 
   @RequestMapping(value = "/book")
   public String getBookPage() throws IOException {
@@ -78,7 +76,7 @@ public class FoosballBookingClientController {
 
   @RequestMapping(value = "/authorizationcallback")
   public String callback(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state) {
-    AccessTokenResponse accessTokenResponse = authorizationServerClient.getAccessToken(code);
+    AccessTokenResponse accessTokenResponse = oauthAuthorizationCodeClient.getAccessTokenResponse(code);
     authorizationCodeAccessToken = accessTokenResponse.getAccessToken();
 
     String redirectUrl = "http://localhost:8090/foosball-booking-client/book";
