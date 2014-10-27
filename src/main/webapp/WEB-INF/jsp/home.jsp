@@ -40,7 +40,7 @@
         </c:forEach>
         </tbody>
     </table>
-    <p><a class="btn btn-primary btn-lg" role="button" href="http://localhost:8090/foosball-booking-client/bookings">Add booking</a></p>
+    <p><a class="btn btn-primary btn-lg" role="button" href="http://localhost:8090/foosball-booking-client/booking">Add booking</a></p>
 </div>
 </body>
 </html>

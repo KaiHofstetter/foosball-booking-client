@@ -32,10 +32,13 @@ public class FoosballBookingClientController {
   private FoosballBookingClient foosballBookingClient;
   private String authorizationCodeAccessToken;
 
+  private AuthorizationCodeContext authorizationCodeContext;
+
   public FoosballBookingClientController() {
     oauthClientCredentialClient = new OAuthClientCredentialClient();
     oauthAuthorizationCodeClient = new OAuthAuthorizationCodeClient();
     foosballBookingClient = new FoosballBookingClient();
+    authorizationCodeContext = new AuthorizationCodeContext();
   }
 
   @RequestMapping(value = "/")
@@ -49,15 +52,20 @@ public class FoosballBookingClientController {
     return new ModelAndView("home", model);
   }
 
-  @RequestMapping(value = "/bookings")
-  public String postBooking(Map<String, Object> model) throws IOException {
-    return "redirect:" + oauthAuthorizationCodeClient.redirectUriToAuthorizationServer();
+  @RequestMapping(value = "/booking", method = RequestMethod.GET)
+  public String getBookingPage(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state) {
+    if (authorizationCodeContext.getAccessTokenResponse() != null) {
+      return "book";
+    } else {
+      if (code != null) {
+        authorizationCodeContext.setAccessTokenResponse(oauthAuthorizationCodeClient.getAccessTokenResponse(code));
+        return "book";
+      } else {
+        return "redirect:" + oauthAuthorizationCodeClient.redirectUriToAuthorizationServer();
+      }
+    }
   }
 
-  @RequestMapping(value = "/book")
-  public String getBookPage() throws IOException {
-    return "book";
-  }
 
   @RequestMapping(value = "/booking", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED)
   public String formBookingPost(@RequestParam String beginTime, @RequestParam String beginDate, @RequestParam String endTime, @RequestParam String endDate,
@@ -68,18 +76,9 @@ public class FoosballBookingClientController {
     LocalDateTime begin = LocalTime.parse(beginTime, timeFormatter).atDate(LocalDate.parse(beginDate, dateFormatter));
     LocalDateTime end = LocalTime.parse(endTime, timeFormatter).atDate(LocalDate.parse(endDate, dateFormatter));
 
-    foosballBookingClient.addBooking(new Booking(begin, end, "Hans", comment), authorizationCodeAccessToken);
+    foosballBookingClient.addBooking(new Booking(begin, end, "Hans", comment), authorizationCodeContext.getAccessTokenResponse().getAccessToken());
 
     String redirectUrl = "http://localhost:8090/foosball-booking-client";
-    return "redirect:" + redirectUrl;
-  }
-
-  @RequestMapping(value = "/authorizationcallback")
-  public String callback(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state) {
-    AccessTokenResponse accessTokenResponse = oauthAuthorizationCodeClient.getAccessTokenResponse(code);
-    authorizationCodeAccessToken = accessTokenResponse.getAccessToken();
-
-    String redirectUrl = "http://localhost:8090/foosball-booking-client/book";
     return "redirect:" + redirectUrl;
   }
 }
