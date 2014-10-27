@@ -20,21 +20,24 @@ public class OAuthAuthorizationCodeClient {
   private static final String CLIENT_SECRET = "secret";
 
   private static final String REDIRECT_URI_TO_AUTHORIZATION_SERVER = "http://localhost:8080/foosball-booking-service/oauth/authorize?response_type=code&client_id={clientId}&state={state]&redirect_uri={redirectUri}";
-  private static final String CALLBACK_URI_FOR_AUTHORIZATION_CODE = "http://localhost:8090/foosball-booking-client/authorizationcallback";
+  private static final String CALLBACK_URI_FOR_AUTHORIZATION_CODE = "http://localhost:8090/foosball-booking-client/booking";
 
   private Client client;
+
+  public OAuthAuthorizationCodeClient() {
+    client = ClientBuilder.newClient();
+  }
 
   public String redirectUriToAuthorizationServer(){
     Map<String, String> uriVariables = new HashMap<>();
     uriVariables.put("clientId", CLIENT_ID);
     uriVariables.put("state", "xyz");
     uriVariables.put("redirectUri", CALLBACK_URI_FOR_AUTHORIZATION_CODE);
+
     return new UriTemplate(REDIRECT_URI_TO_AUTHORIZATION_SERVER).expand(uriVariables).toASCIIString();
   }
 
   public AccessTokenResponse getAccessTokenResponse(String code) {
-    client = ClientBuilder.newClient();
-
     Form postContent = new Form();
     postContent.param("grant_type", "authorization_code");
     postContent.param("code", code);
