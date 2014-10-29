@@ -72,11 +72,14 @@ public class FoosballBookingClientController {
     LocalDateTime begin = LocalTime.parse(beginTime, timeFormatter).atDate(LocalDate.parse(beginDate, dateFormatter));
     LocalDateTime end = LocalTime.parse(endTime, timeFormatter).atDate(LocalDate.parse(endDate, dateFormatter));
 
+    Booking newBooking = new Booking(begin, end, comment);
+    String accessToken = oauthAuthorizationCodeClient.getAccessToken();
+
     try {
-      foosballBookingClient.addBooking(new Booking(begin, end, comment), oauthAuthorizationCodeClient.getAccessToken());
+      foosballBookingClient.addBooking(newBooking, accessToken);
     } catch (NotAuthorizedException notAuthorizedException) {
       oauthAuthorizationCodeClient.refreshAccessToken();
-      foosballBookingClient.addBooking(new Booking(begin, end, comment), oauthAuthorizationCodeClient.getAccessToken());
+      foosballBookingClient.addBooking(newBooking, accessToken);
     }
 
     return "redirect:/";
