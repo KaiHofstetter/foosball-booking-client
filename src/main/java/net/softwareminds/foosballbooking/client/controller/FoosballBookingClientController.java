@@ -2,7 +2,6 @@ package net.softwareminds.foosballbooking.client.controller;
 
 import net.softwareminds.foosballbooking.client.domain.Booking;
 import net.softwareminds.foosballbooking.client.oauth2.OAuthAuthorizationCodeClient;
-import net.softwareminds.foosballbooking.client.oauth2.AccessTokenResponse;
 import net.softwareminds.foosballbooking.client.oauth2.OAuthClientCredentialClient;
 
 import org.springframework.stereotype.Controller;
@@ -19,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
@@ -30,15 +30,11 @@ public class FoosballBookingClientController {
   private OAuthAuthorizationCodeClient oauthAuthorizationCodeClient;
 
   private FoosballBookingClient foosballBookingClient;
-  private String authorizationCodeAccessToken;
-
-  private AuthorizationCodeContext authorizationCodeContext;
 
   public FoosballBookingClientController() {
     oauthClientCredentialClient = new OAuthClientCredentialClient();
     oauthAuthorizationCodeClient = new OAuthAuthorizationCodeClient();
     foosballBookingClient = new FoosballBookingClient();
-    authorizationCodeContext = new AuthorizationCodeContext();
   }
 
   @RequestMapping(value = "/")
@@ -53,19 +49,19 @@ public class FoosballBookingClientController {
   }
 
   @RequestMapping(value = "/booking", method = RequestMethod.GET)
-  public String getBookingPage(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state) {
-    if (authorizationCodeContext.getAccessTokenResponse() != null) {
+  public String getBookingPage() {
+    if (oauthAuthorizationCodeClient.hasAuthorizationBeenRequested()) {
       return "book";
-    } else {
-      if (code != null) {
-        authorizationCodeContext.setAccessTokenResponse(oauthAuthorizationCodeClient.getAccessTokenResponse(code));
-        return "book";
-      } else {
-        return "redirect:" + oauthAuthorizationCodeClient.redirectUriToAuthorizationServer();
-      }
     }
+
+    return "redirect:" + oauthAuthorizationCodeClient.getRedirectUriToAuthorizationServer();
   }
 
+  @RequestMapping(value = "/authorization-code-callback", method = RequestMethod.GET)
+  public String authorizationCodeCallback(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state) {
+    oauthAuthorizationCodeClient.requestAccessTokenResponseByCode(code);
+    return "book";
+  }
 
   @RequestMapping(value = "/booking", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED)
   public String formBookingPost(@RequestParam String beginTime, @RequestParam String beginDate, @RequestParam String endTime, @RequestParam String endDate,
@@ -76,9 +72,13 @@ public class FoosballBookingClientController {
     LocalDateTime begin = LocalTime.parse(beginTime, timeFormatter).atDate(LocalDate.parse(beginDate, dateFormatter));
     LocalDateTime end = LocalTime.parse(endTime, timeFormatter).atDate(LocalDate.parse(endDate, dateFormatter));
 
-    foosballBookingClient.addBooking(new Booking(begin, end, "Hans", comment), authorizationCodeContext.getAccessTokenResponse().getAccessToken());
+    try {
+      foosballBookingClient.addBooking(new Booking(begin, end, "Hans", comment), oauthAuthorizationCodeClient.getAccessToken());
+    } catch (NotAuthorizedException notAuthorizedException) {
+      oauthAuthorizationCodeClient.refreshAccessToken();
+      foosballBookingClient.addBooking(new Booking(begin, end, "Hans", comment), oauthAuthorizationCodeClient.getAccessToken());
+    }
 
-    String redirectUrl = "http://localhost:8090/foosball-booking-client";
-    return "redirect:" + redirectUrl;
+    return "redirect:/";
   }
 }
