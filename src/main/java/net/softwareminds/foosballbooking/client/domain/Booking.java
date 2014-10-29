@@ -26,7 +26,7 @@ public class Booking {
   public Booking() {
   }
 
-  public Booking(LocalDateTime begin, LocalDateTime end, String user, String comment) {
+  public Booking(LocalDateTime begin, LocalDateTime end, String comment) {
     this.begin = begin;
     this.end = end;
     this.user = user;
