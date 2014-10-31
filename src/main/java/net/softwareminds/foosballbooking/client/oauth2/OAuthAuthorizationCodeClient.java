@@ -1,17 +1,22 @@
 package net.softwareminds.foosballbooking.client.oauth2;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 
+@Controller
 public class OAuthAuthorizationCodeClient {
 
   private static final String CLIENT_ID = "Foosball Booking Read/Write Client";
@@ -31,8 +36,11 @@ public class OAuthAuthorizationCodeClient {
     client = ClientBuilder.newClient();
   }
 
-  public boolean hasAuthorizationBeenRequested() {
-    return accessTokenContainer != null;
+  public String ensureAuthorizationHasBeenRequested() {
+    if( accessTokenContainer == null ) {
+      return "redirect:" + getRedirectUriToAuthorizationServer();
+    }
+    return "book";
   }
 
   public String getRedirectUriToAuthorizationServer() {
@@ -44,7 +52,8 @@ public class OAuthAuthorizationCodeClient {
     return new UriTemplate(REDIRECT_URL_TO_AUTHORIZATION_SERVER).expand(uriVariables).toString();
   }
 
-  public void requestAccessTokenResponseByCode(String code) {
+  @RequestMapping(value = "/authorization-code-callback", method = RequestMethod.GET)
+  public String authorizationCodeCallback(@QueryParam(value = "code") String code, @QueryParam(value = "state") String state) {
     Form postContent = new Form();
     postContent.param("grant_type", "authorization_code");
     postContent.param("code", code);
@@ -56,6 +65,7 @@ public class OAuthAuthorizationCodeClient {
                                                     .post(Entity.entity(postContent, MediaType.APPLICATION_FORM_URLENCODED_TYPE), AccessTokenResponse.class);
 
     accessTokenContainer = new AccessTokenContainer(accessTokenResponse);
+    return "book";
   }
 
   public String getAccessToken() {

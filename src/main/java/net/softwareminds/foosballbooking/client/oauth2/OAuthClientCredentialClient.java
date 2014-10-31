@@ -14,13 +14,23 @@ public class OAuthClientCredentialClient {
   private static final String CLIENT_ID = "Foosball Booking Read Client";
   private static final String CLIENT_SECRET = "secret";
 
+  private AccessTokenContainer accessTokenContainer = null;
+
   private Client client;
 
   public OAuthClientCredentialClient() {
     client = ClientBuilder.newClient();
   }
 
-  public AccessTokenResponse getAccessTokenResponse() {
+  public String getAccessToken() {
+    if (accessTokenContainer == null ||
+        accessTokenContainer.hasAccessTokenExpired()) {
+      accessTokenContainer = new AccessTokenContainer(requestAccessToken());
+    }
+    return accessTokenContainer.getAccessToken();
+  }
+
+  private AccessTokenResponse requestAccessToken() {
     Form postContent = new Form();
     postContent.param("grant_type", "client_credentials");
 

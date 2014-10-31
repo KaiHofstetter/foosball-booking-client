@@ -1,9 +1,12 @@
 package net.softwareminds.foosballbooking.client.config;
 
 import net.softwareminds.foosballbooking.client.controller.FoosballBookingClientController;
+import net.softwareminds.foosballbooking.client.oauth2.OAuthAuthorizationCodeClient;
+import net.softwareminds.foosballbooking.client.oauth2.OAuthClientCredentialClient;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.servlet.View;
@@ -22,6 +25,19 @@ import java.util.Arrays;
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
   @Bean
+  @Scope("session")
+  public OAuthAuthorizationCodeClient oAuthAuthorizationCodeClient() {
+    return new OAuthAuthorizationCodeClient();
+  }
+
+  @Bean
+  @Scope("session")
+  public OAuthClientCredentialClient oAuthClientCredentialClient() {
+    return new OAuthClientCredentialClient();
+  }
+
+  @Bean
+  @Scope("session")
   public FoosballBookingClientController foosballServiceController() {
     return new FoosballBookingClientController();
   }
