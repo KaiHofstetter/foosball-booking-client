@@ -1,6 +1,7 @@
 package net.softwareminds.foosballbooking.client.controller;
 
 import net.softwareminds.foosballbooking.client.domain.Booking;
+import net.softwareminds.foosballbooking.client.domain.BookingList;
 import net.softwareminds.foosballbooking.client.oauth2.OAuthAuthorizationCodeClient;
 import net.softwareminds.foosballbooking.client.oauth2.OAuthClientCredentialClient;
 
@@ -16,7 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.NotAuthorizedException;
@@ -41,8 +41,8 @@ public class FoosballBookingClientController {
   public ModelAndView allBookings(Map<String, Object> model) throws IOException {
     String clientCredentialAccessToken = oauthClientCredentialClient.getAccessToken();
 
-    List<Booking> bookings = foosballBookingClient.getAllBookings(clientCredentialAccessToken);
-    model.put("bookings", bookings);
+    BookingList bookingList = foosballBookingClient.getAllBookings(clientCredentialAccessToken);
+    model.put("bookings", bookingList.getContent());
 
     return new ModelAndView("home", model);
   }
