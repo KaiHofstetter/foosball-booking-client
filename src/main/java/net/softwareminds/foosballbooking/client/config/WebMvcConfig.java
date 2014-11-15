@@ -4,7 +4,6 @@ import net.softwareminds.foosballbooking.client.controller.FoosballBookingClient
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.servlet.View;
@@ -23,7 +22,6 @@ import java.util.Arrays;
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
   @Bean
-  @Scope("session")
   public FoosballBookingClientController foosballServiceController() {
     return new FoosballBookingClientController();
   }
