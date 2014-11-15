@@ -2,10 +2,10 @@ package net.softwareminds.foosballbooking.client.controller;
 
 import net.softwareminds.foosballbooking.client.domain.Booking;
 import net.softwareminds.foosballbooking.client.domain.BookingList;
-import net.softwareminds.foosballbooking.client.oauth2.OAuthAuthorizationCodeClient;
 import net.softwareminds.foosballbooking.client.oauth2.OAuthClientCredentialClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.MediaType;
 
 
@@ -29,7 +29,7 @@ public class FoosballBookingClientController {
   @Autowired
   private OAuthClientCredentialClient oauthClientCredentialClient;
   @Autowired
-  private OAuthAuthorizationCodeClient oauthAuthorizationCodeClient;
+  private OAuth2RestOperations bookingAuthorizationCodeClient;
 
   private FoosballBookingClient foosballBookingClient;
 
@@ -49,7 +49,9 @@ public class FoosballBookingClientController {
 
   @RequestMapping(value = "/booking", method = RequestMethod.GET)
   public String getBookingPage() {
-    return oauthAuthorizationCodeClient.ensureAuthorizationHasBeenRequested();
+    // The user should be authenticated before we proceed with the booking form.
+    bookingAuthorizationCodeClient.getAccessToken();
+    return "book";
   }
 
   @RequestMapping(value = "/booking", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED)
@@ -62,15 +64,8 @@ public class FoosballBookingClientController {
     LocalDateTime end = LocalTime.parse(endTime, timeFormatter).atDate(LocalDate.parse(endDate, dateFormatter));
 
     Booking newBooking = new Booking(begin, end, comment);
-    String accessToken = oauthAuthorizationCodeClient.getAccessToken();
 
-    try {
-      foosballBookingClient.addBooking(newBooking, accessToken);
-    } catch (NotAuthorizedException notAuthorizedException) {
-      oauthAuthorizationCodeClient.refreshAccessToken();
-      foosballBookingClient.addBooking(newBooking, accessToken);
-    }
-
+    bookingAuthorizationCodeClient.postForLocation(URI.create(FoosballBookingClient.URL_FOOSBALL_BOOKING_SERVICE), newBooking);
     return "redirect:/";
   }
 }

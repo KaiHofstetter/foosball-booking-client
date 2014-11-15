@@ -1,12 +1,9 @@
 package net.softwareminds.foosballbooking.client.controller;
 
-import net.softwareminds.foosballbooking.client.domain.Booking;
 import net.softwareminds.foosballbooking.client.domain.BookingList;
-import net.softwareminds.foosballbooking.client.oauth2.AccessTokenResponse;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
@@ -25,12 +22,5 @@ public class FoosballBookingClient {
                  .request(MediaType.APPLICATION_JSON)
                  .header("Authorization", "Bearer " + accessToken)
                  .get(new GenericType<BookingList>(){});
-  }
-
-  public void addBooking(Booking booking, String accessToken) {
-    client.target(URL_FOOSBALL_BOOKING_SERVICE)
-                 .request(MediaType.APPLICATION_JSON)
-                 .header("Authorization", "Bearer " + accessToken)
-                 .post(Entity.entity(booking, MediaType.APPLICATION_JSON), AccessTokenResponse.class);
   }
 }
