@@ -2,7 +2,6 @@ package net.softwareminds.foosballbooking.client.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -13,7 +12,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Booking {
@@ -29,7 +27,6 @@ public class Booking {
   public Booking(LocalDateTime begin, LocalDateTime end, String comment) {
     this.begin = begin;
     this.end = end;
-    this.user = user;
     this.comment = comment;
   }
 
