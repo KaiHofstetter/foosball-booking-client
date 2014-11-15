@@ -44,8 +44,8 @@ public class OAuth2RestTemplatesConfig {
     return oAuth2RestTemplate;
   }
 
+  // No session scope needed, since the client credential grant has no user context!
   @Bean
-  @Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
   public OAuth2RestOperations bookingClientCredentialClient() {
     ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
     resourceDetails.setId("2");
@@ -53,7 +53,7 @@ public class OAuth2RestTemplatesConfig {
     resourceDetails.setClientSecret("secret");
     resourceDetails.setAccessTokenUri(ACCESS_TOKEN_URI);
 
-    OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resourceDetails, new DefaultOAuth2ClientContext(accessTokenRequest));
+    OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(resourceDetails);
     oAuth2RestTemplate.setAccessTokenProvider(new ClientCredentialsAccessTokenProvider());
     return oAuth2RestTemplate;
   }
