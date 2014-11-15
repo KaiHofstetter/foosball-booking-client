@@ -1,7 +1,6 @@
 package net.softwareminds.foosballbooking.client.config;
 
 import net.softwareminds.foosballbooking.client.controller.FoosballBookingClientController;
-import net.softwareminds.foosballbooking.client.oauth2.OAuthClientCredentialClient;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,12 +21,6 @@ import java.util.Arrays;
 @Configuration
 @EnableWebMvc
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
-
-  @Bean
-  @Scope("session")
-  public OAuthClientCredentialClient oAuthClientCredentialClient() {
-    return new OAuthClientCredentialClient();
-  }
 
   @Bean
   @Scope("session")

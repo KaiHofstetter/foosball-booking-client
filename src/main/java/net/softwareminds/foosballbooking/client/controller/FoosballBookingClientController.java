@@ -2,7 +2,6 @@ package net.softwareminds.foosballbooking.client.controller;
 
 import net.softwareminds.foosballbooking.client.domain.Booking;
 import net.softwareminds.foosballbooking.client.domain.BookingList;
-import net.softwareminds.foosballbooking.client.oauth2.OAuthClientCredentialClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,23 +23,16 @@ import javax.ws.rs.core.MediaType;
 
 @Controller
 public class FoosballBookingClientController {
+  private static final String URL_FOOSBALL_BOOKING_SERVICE = "http://localhost:8080/foosball-booking-service/bookings";
 
-  @Autowired
-  private OAuthClientCredentialClient oauthClientCredentialClient;
   @Autowired
   private OAuth2RestOperations bookingAuthorizationCodeClient;
-
-  private FoosballBookingClient foosballBookingClient;
-
-  public FoosballBookingClientController() {
-    foosballBookingClient = new FoosballBookingClient();
-  }
+  @Autowired
+  private OAuth2RestOperations bookingClientCredentialClient;
 
   @RequestMapping(value = "/")
   public ModelAndView allBookings(Map<String, Object> model) throws IOException {
-    String clientCredentialAccessToken = oauthClientCredentialClient.getAccessToken();
-
-    BookingList bookingList = foosballBookingClient.getAllBookings(clientCredentialAccessToken);
+    BookingList bookingList = bookingClientCredentialClient.getForObject(URL_FOOSBALL_BOOKING_SERVICE, BookingList.class);
     model.put("bookings", bookingList.getContent());
 
     return new ModelAndView("home", model);
@@ -65,7 +56,7 @@ public class FoosballBookingClientController {
 
     Booking newBooking = new Booking(begin, end, comment);
 
-    bookingAuthorizationCodeClient.postForLocation(URI.create(FoosballBookingClient.URL_FOOSBALL_BOOKING_SERVICE), newBooking);
+    bookingAuthorizationCodeClient.postForLocation(URL_FOOSBALL_BOOKING_SERVICE, newBooking);
     return "redirect:/";
   }
 }
