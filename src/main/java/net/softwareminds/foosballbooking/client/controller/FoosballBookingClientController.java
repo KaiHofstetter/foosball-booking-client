@@ -4,6 +4,7 @@ import net.softwareminds.foosballbooking.client.domain.Booking;
 import net.softwareminds.foosballbooking.client.domain.BookingList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +18,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
 
 
 @Controller
@@ -45,7 +44,7 @@ public class FoosballBookingClientController {
     return "book";
   }
 
-  @RequestMapping(value = "/booking", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED)
+  @RequestMapping(value = "/booking", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   public String formBookingPost(@RequestParam String beginTime, @RequestParam String beginDate, @RequestParam String endTime, @RequestParam String endDate,
                                 @RequestParam String comment) throws IOException {
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
