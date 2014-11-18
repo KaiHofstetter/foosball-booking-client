@@ -25,9 +25,9 @@ public class FoosballBookingClientController {
   private static final String URL_FOOSBALL_BOOKING_SERVICE = "http://localhost:8080/foosball-booking-service/bookings";
 
   @Autowired
-  private OAuth2RestOperations bookingAuthorizationCodeClient;
-  @Autowired
   private OAuth2RestOperations bookingClientCredentialClient;
+  @Autowired
+  private OAuth2RestOperations bookingAuthorizationCodeClient;
 
   @RequestMapping(value = "/")
   public ModelAndView allBookings(Map<String, Object> model) throws IOException {
