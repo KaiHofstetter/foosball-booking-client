@@ -22,7 +22,6 @@ import javax.annotation.Resource;
 public class OAuth2RestTemplatesConfig {
 
   private static final String ACCESS_TOKEN_URI = "http://localhost:8080/foosball-booking-service/oauth/token";
-
   private static final String USER_AUTHORIZATION_URI = "http://localhost:8080/foosball-booking-service/oauth/authorize";
 
   @Resource
