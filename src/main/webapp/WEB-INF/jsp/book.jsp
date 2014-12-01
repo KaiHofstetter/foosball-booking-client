@@ -6,13 +6,15 @@
 <html>
 <head>
     <title>Foosball Booking Sample Client</title>
+
     <link type="text/css" rel="stylesheet"
-          href="./resources/css/bootstrap.min.css"/>
+          href="./webjars/bootstrap/3.2.0/css/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet"
           href="./resources/css/bootstrap-datetimepicker.min.css"/>
-    <script type="text/javascript" src="./resources/js/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="./resources/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="./resources/js/moment.js"></script>
+    <script type="text/javascript" src="./webjars/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="./webjars/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./webjars/momentjs/2.8.3/moment.js"></script>
     <script type="text/javascript" src="./resources/js/bootstrap-datetimepicker.min.js"></script>
 </head>
 <body>

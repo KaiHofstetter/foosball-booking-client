@@ -6,6 +6,7 @@
 <html>
 <head>
     <title>Foosball Booking Sample Client</title>
+    <script type="text/javascript" src="./webjars/jquery/2.1.1/jquery.min.js"></script>
     <link type="text/css" rel="stylesheet"
           href="./webjars/bootstrap/3.2.0/css/bootstrap.min.css"/>
     <script type="text/javascript"
